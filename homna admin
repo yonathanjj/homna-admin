@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Admin Panel</title>
+    <style>
+        :root {
+            --primary: #2E368F;
+            --secondary: #f8f9fa;
+            --light: #ffffff;
+            --dark: #343a40;
+            --success: #28a745;
+            --danger: #dc3545;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+        }
+
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 250px;
+            background-color: var(--primary);
+            color: white;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+        }
+
+        .logo {
+            text-align: center;
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo h2 {
+            color: white;
+        }
+
+        .nav-menu {
+            margin-top: 20px;
+        }
+
+        .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .nav-item.active {
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        .nav-item i {
+            margin-right: 10px;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .page-title {
+            font-size: 24px;
+            color: var(--dark);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            font-weight: 500;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        /* Content Sections */
+        .content-section {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 15px;
+            color: var(--primary);
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        textarea.form-control {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        /* Table Styles */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .table th, .table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .table th {
+            background-color: var(--secondary);
+            font-weight: 600;
+        }
+
+        .table tr:hover {
+            background-color: rgba(0,0,0,0.02);
+        }
+
+        .action-btn {
+            padding: 5px 10px;
+            margin-right: 5px;
+            font-size: 12px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 20px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+        }
+
+        .tab.active {
+            border-bottom: 2px solid var(--primary);
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 70px;
+                overflow: hidden;
+            }
+
+            .logo h2, .nav-item span {
+                display: none;
+            }
+
+            .nav-item {
+                justify-content: center;
+            }
+
+            .main-content {
+                margin-left: 70px;
+            }
+        }
+    </style>
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+<div class="admin-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="logo">
+            <h2>Admin Panel</h2>
+        </div>
+        <div class="nav-menu">
+            <div class="nav-item active" onclick="showSection('dashboard')">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Dashboard</span>
+            </div>
+            <div class="nav-item" onclick="showSection('home')">
+                <i class="fas fa-home"></i>
+                <span>Home Page</span>
+            </div>
+            <div class="nav-item" onclick="showSection('about')">
+                <i class="fas fa-info-circle"></i>
+                <span>About Page</span>
+            </div>
+            <div class="nav-item" onclick="showSection('projects')">
+                <i class="fas fa-project-diagram"></i>
+                <span>Projects</span>
+            </div>
+            <div class="nav-item" onclick="showSection('blog')">
+                <i class="fas fa-blog"></i>
+                <span>Blog</span>
+            </div>
+            <div class="nav-item" onclick="showSection('contact')">
+                <i class="fas fa-envelope"></i>
+                <span>Contact</span>
+            </div>
+            <div class="nav-item" onclick="showSection('solutions')">
+                <i class="fas fa-cogs"></i>
+                <span>Solutions Pages</span>
+            </div>
+            <div class="nav-item" onclick="showSection('media')">
+                <i class="fas fa-images"></i>
+                <span>Media Library</span>
+            </div>
+            <div class="nav-item" onclick="showSection('settings')">
+                <i class="fas fa-cog"></i>
+                <span>Settings</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <h1 class="page-title">Dashboard</h1>
+            <div>
+                <button class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div id="dashboard-section" class="content-section">
+            <h2 class="section-title">Website Overview</h2>
+            <p>Welcome to your website admin panel. Select a section from the sidebar to edit content.</p>
+
+            <div class="stats-grid" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px;">
+                <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <h3>Pages</h3>
+                    <p style="font-size: 24px; font-weight: bold;">16</p>
+                </div>
+                <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <h3>Last Updated</h3>
+                    <p style="font-size: 24px; font-weight: bold;">Today</p>
+                </div>
+                <div style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <h3>Media Files</h3>
+                    <p style="font-size: 24px; font-weight: bold;">42</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Home Page Section -->
+        <div id="home-section" class="content-section" style="display: none;">
+            <h2 class="section-title">Home Page Content</h2>
+
+            <div class="tabs">
+                <div class="tab active" onclick="showHomeTab('hero')">Hero Section</div>
+                <div class="tab" onclick="showHomeTab('what-we-do')">What We Do</div>
+                <div class="tab" onclick="showHomeTab('expertise')">Expertise</div>
+                <div class="tab" onclick="showHomeTab('projects')">Latest Projects</div>
+            </div>
+
+            <!-- Hero Section Tab -->
+            <div id="home-hero-tab">
+                <div class="form-group">
+                    <label>Hero Video (MP4)</label>
+                    <input type="file" class="form-control" accept="video/mp4">
+                    <small>Current: assets/image/Homnam1.mp4</small>
+                </div>
+                <div class="form-group">
+                    <label>Hero Video (WebM)</label>
+                    <input type="file" class="form-control" accept="video/webm">
+                    <small>Current: assets/video/your-video-file.webm</small>
+                </div>
+                <div class="form-group">
+                    <label>Hero Text</label>
+                    <input type="text" class="form-control" value="Building Your Dreams, One Brick at a Time">
+                </div>
+            </div>
+
+            <!-- What We Do Tab -->
+            <div id="home-what-we-do-tab" style="display: none;">
+                <div class="form-group">
+                    <label>Section Title</label>
+                    <input type="text" class="form-control" value="What We Do">
+                </div>
+                <div class="form-group">
+                    <label>Button Text</label>
+                    <input type="text" class="form-control" value="See our solutions">
+                </div>
+                <div class="form-group">
+                    <label>Button Link</label>
+                    <input type="text" class="form-control" value="about.html">
+                </div>
+                <div class="form-group">
+                    <label>Description Text</label>
+                    <textarea class="form-control">We offer a wide range of creative services designed to help your business thrive. From branding and design to digital marketing and event management, our team is here to bring your ideas to life. With a keen eye for detail and a passion for innovation, we ensure that every project is executed with excellence and a focus on your unique goals.</textarea>
+                </div>
+            </div>
+
+            <!-- Expertise Tab -->
+            <div id="home-expertise-tab" style="display: none;">
+                <div class="form-group">
+                    <label>Section Title</label>
+                    <input type="text" class="form-control" value="Solutions">
+                </div>
+
+                <h3 style="margin: 20px 0 10px;">Expertise Cards</h3>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Image</th>
+                        <th>Link</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><input type="text" class="form-control" value="Basement Waterproofing"></td>
+                        <td><input type="text" class="form-control" value="Keep your basement dry and safe with our advanced waterproofing solutions."></td>
+                        <td><input type="file" class="form-control"></td>
+                        <td><input type="text" class="form-control" value="solutions/External-Wall.html"></td>
+                        <td>
+                            <button class="btn btn-danger action-btn">Delete</button>
+                        </td>
+                    </tr>
+                    <!-- More rows would be added here -->
+                    </tbody>
+                </table>
+                <button class="btn btn-primary">Add New Card</button>
+            </div>
+
+            <!-- Projects Tab -->
+            <div id="home-projects-tab" style="display: none;">
+                <div class="form-group">
+                    <label>Section Title</label>
+                    <input type="text" class="form-control" value="Latest Projects">
+                </div>
+
+                <h3 style="margin: 20px 0 10px;">Project Cards</h3>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Image</th>
+                        <th>Gallery Images</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><input type="text" class="form-control" value="Zaria Court Project"></td>
+                        <td><input type="file" class="form-control"></td>
+                        <td><input type="file" class="form-control" multiple></td>
+                        <td>
+                            <button class="btn btn-danger action-btn">Delete</button>
+                        </td>
+                    </tr>
+                    <!-- More rows would be added here -->
+                    </tbody>
+                </table>
+                <button class="btn btn-primary">Add New Project</button>
+            </div>
+        </div>
+
+        <!-- About Page Section -->
+        <div id="about-section" class="content-section" style="display: none;">
+            <h2 class="section-title">About Page Content</h2>
+
+            <div class="tabs">
+                <div class="tab active" onclick="showAboutTab('hero')">Hero Section</div>
+                <div class="tab" onclick="showAboutTab('content')">Content Section</div>
+                <div class="tab" onclick="showAboutTab('team')">Team Section</div>
+            </div>
+
+            <!-- Hero Section Tab -->
+            <div id="about-hero-tab">
+                <div class="form-group">
+                    <label>Hero Image</label>
+                    <input type="file" class="form-control">
+                    <small>Current: assets/image/3.jpeg</small>
+                </div>
+                <div class="form-group">
+                    <label>Hero Title</label>
+                    <input type="text" class="form-control" value="Welcome to Homna: Crafting Stories, Building Connections">
+                </div>
+                <div class="form-group">
+                    <label>Hero Description</label>
+                    <textarea class="form-control">At LaMonje, we transform ideas into unforgettable experiences. Through immersive storytelling, artistic collaborations, and cutting-edge creativity, we bring visions to life. Join us in shaping narratives that inspire, connect, and redefine storytelling.</textarea>
+                </div>
+            </div>
+
+            <!-- Content Section Tab -->
+            <div id="about-content-tab" style="display: none;">
+                <div class="form-group">
+                    <label>Sticky Heading</label>
+                    <input type="text" class="form-control" value="You know where you're going.">
+                </div>
+
+                <h3 style="margin: 20px 0 10px;">Content Blocks</h3>
+
+                <div class="form-group">
+                    <label>Mission Title</label>
+                    <input type="text" class="form-control" value="Mission">
+                </div>
+                <div class="form-group">
+                    <label>Mission Content</label>
+                    <textarea class="form-control">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vel magna sit amet nulla efficitur vestibulum. Fusce fringilla nulla eu risus viverra, Lorem ipsum dolor sit amet,Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vel magna sit amet nulla efficitur vestibulum. Fusce fringilla nulla eu risus viverra, consectetur adipiscing elit. Donec vel magna sit amet nulla efficitur vestibulum. Fusce fringilla nulla eu risus viverra, ut convallis orci pharetra.</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Vision Title</label>
+                    <input type="text" class="form-control" value="Vision">
+                </div>
+                <div class="form-group">
+                    <label>Vision Content</label>
+                    <textarea class="form-control">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vel magna sit amet nulla efficitur vestibulum. Fusce fringilla nulla eu risus viverra, ut Lorem ipsum dolor sit amet, conseLorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vel magna sit amet nulla efficitur vestibulum. Fusce fringilla nulla eu risus viverra,ctetur adipiscing elit. Donec vel magna sit amet nulla efficitur vestibulum. Fusce fringilla nulla eu risus viverra, convallis orci pharetra.</textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Commitment Title</label>
+                    <input type="text" class="form-control" value="Commitment">
+                </div>
+                <div class="form-group">
+                    <label>Commitment Content</label>
+                    <textarea class="form-control">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vel magna sit amet nulla efficitur vestibulum. Fusce fringilla nulla eu risus viverra, ut convallis orci Lorem ipsum dolor sit amet, consectetur Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vel magna sit amet nulla efficitur vestibulum. Fusce fringilla nulla eu risus viverra,adipiscing elit. Donec vel magna sit amet nulla efficitur vestibulum. Fusce fringilla nulla eu risus viverra,pharetra.</textarea>
+                </div>
+            </div>
+
+            <!-- Team Section Tab -->
+            <div id="about-team-tab" style="display: none;">
+                <div class="form-group">
+                    <label>Section Title</label>
+                    <input type="text" class="form-control" value="Meet Our Team">
+                </div>
+
+                <h3 style="margin: 20px 0 10px;">Team Members</h3>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Position</th>
+                        <th>Image</th>
+                        <th>LinkedIn</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><input type="text" class="form-control" value="John Doe"></td>
+                        <td><input type="text" class="form-control" value="CEO - Leads the company and oversees all operations and growth strategies."></td>
+                        <td><input type="file" class="form-control"></td>
+                        <td><input type="text" class="form-control" value="https://linkedin.com/in/johndoe"></td>
+                        <td>
+                            <button class="btn btn-danger action-btn">Delete</button>
+                        </td>
+                    </tr>
+                    <!-- More rows would be added here -->
+                    </tbody>
+                </table>
+                <button class="btn btn-primary">Add New Member</button>
+            </div>
+        </div>
+
+        <!-- Projects Page Section -->
+        <div id="projects-section" class="content-section" style="display: none;">
+            <h2 class="section-title">Projects Page Content</h2>
+
+            <div class="form-group">
+                <label>Page Title</label>
+                <input type="text" class="form-control" value="Our Projects">
+            </div>
+
+            <div class="form-group">
+                <label>Intro Text</label>
+                <textarea class="form-control">Explore some of our most innovative and impactful projects. From cutting-edge construction solutions to sustainable designs, our work speaks for itself. Each project reflects our commitment to quality, creativity, and excellence.</textarea>
+            </div>
+
+            <h3 style="margin: 20px 0 10px;">Project Gallery</h3>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Main Image</th>
+                    <th>Gallery Images</th>
+                    <th>Description</th>
+                    <th>Solutions</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><input type="text" class="form-control" value="Zaria Court Project"></td>
+                    <td><input type="file" class="form-control"></td>
+                    <td><input type="file" class="form-control" multiple></td>
+                    <td><textarea class="form-control">Project description goes here</textarea></td>
+                    <td><input type="text" class="form-control" value="Solution 1, Solution 2"></td>
+                    <td>
+                        <button class="btn btn-danger action-btn">Delete</button>
+                    </td>
+                </tr>
+                <!-- More rows would be added here -->
+                </tbody>
+            </table>
+            <button class="btn btn-primary">Add New Project</button>
+        </div>
+
+        <!-- Blog Page Section -->
+        <div id="blog-section" class="content-section" style="display: none;">
+            <h2 class="section-title">Blog Page Content</h2>
+
+            <div class="form-group">
+                <label>Main Section Title</label>
+                <input type="text" class="form-control" value="News and blogs">
+            </div>
+
+            <h3 style="margin: 20px 0 10px;">Featured Blog Posts</h3>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Image</th>
+                    <th>Excerpt</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><input type="text" class="form-control" value="Arup signs MoU with industry leaders"></td>
+                    <td><input type="file" class="form-control"></td>
+                    <td><textarea class="form-control">Leading engineering firm Arup has announced a new partnership with major industry players to integrate ecological considerations into offshore wind farm development...</textarea></td>
+                    <td><input type="date" class="form-control" value="2024-12-13"></td>
+                    <td>
+                        <button class="btn btn-danger action-btn">Delete</button>
+                    </td>
+                </tr>
+                <!-- More rows would be added here -->
+                </tbody>
+            </table>
+            <button class="btn btn-primary">Add New Post</button>
+
+            <h3 style="margin: 20px 0 10px;">Latest Posts Section</h3>
+            <div class="form-group">
+                <label>Section Title</label>
+                <input type="text" class="form-control" value="Latest Posts">
+            </div>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Image</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><input type="text" class="form-control" value="Blog Post Title 1"></td>
+                    <td><input type="file" class="form-control"></td>
+                    <td><input type="date" class="form-control" value="2024-03-15"></td>
+                    <td>
+                        <button class="btn btn-danger action-btn">Delete</button>
+                    </td>
+                </tr>
+                <!-- More rows would be added here -->
+                </tbody>
+            </table>
+            <button class="btn btn-primary">Add New Post</button>
+        </div>
+
+        <!-- Contact Page Section -->
+        <div id="contact-section" class="content-section" style="display: none;">
+            <h2 class="section-title">Contact Page Content</h2>
+
+            <div class="tabs">
+                <div class="tab active" onclick="showContactTab('form')">Contact Form</div>
+                <div class="tab" onclick="showContactTab('info')">Contact Info</div>
+                <div class="tab" onclick="showContactTab('faq')">FAQ</div>
+            </div>
+
+            <!-- Contact Form Tab -->
+            <div id="contact-form-tab">
+                <div class="form-group">
+                    <label>Form Title</label>
+                    <input type="text" class="form-control" value="Contact Us">
+                </div>
+
+                <div class="form-group">
+                    <label>Subtext</label>
+                    <textarea class="form-control">Whether it's to join us, to know us, to question us, or to help us serve you better, we'd love to hear what's on your mind.</textarea>
+                </div>
+
+                <h3 style="margin: 20px 0 10px;">Form Categories</h3>
+                <div class="form-group">
+                    <label><input type="checkbox" checked> General</label>
+                    <label><input type="checkbox" checked> Product Availability</label>
+                    <label><input type="checkbox" checked> Product Complaint</label>
+                    <label><input type="checkbox" checked> Industrial Product</label>
+                    <label><input type="checkbox" checked> Other</label>
+                </div>
+
+                <h3 style="margin: 20px 0 10px;">Form Fields</h3>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Field</th>
+                        <th>Label</th>
+                        <th>Required</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td>Type (Dropdown)</td>
+                        <td><input type="text" class="form-control" value="Type"></td>
+                        <td><input type="checkbox" checked></td>
+                        <td>
+                            <button class="btn btn-danger action-btn">Delete</button>
+                        </td>
+                    </tr>
+                    <!-- More rows would be added here -->
+                    </tbody>
+                </table>
+                <button class="btn btn-primary">Add New Field</button>
+            </div>
+
+            <!-- Contact Info Tab -->
+            <div id="contact-info-tab" style="display: none;">
+                <h3>Office Information</h3>
+                <div class="form-group">
+                    <label>Office Title</label>
+                    <input type="text" class="form-control" value="Corporate Office">
+                </div>
+                <div class="form-group">
+                    <label>Address</label>
+                    <textarea class="form-control">4V89+5V8, Ramkrishna Mandir Road, Off Sir Mathuradas Vasanji Road, Andheri, Andheri East, Mumbai, Maharashtra 400059</textarea>
+                </div>
+
+                <h3 style="margin: 20px 0 10px;">Phone Numbers</h3>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Number</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><input type="text" class="form-control" value="+2664 8494544"></td>
+                        <td>
+                            <button class="btn btn-danger action-btn">Delete</button>
+                        </td>
+                    </tr>
+                    <!-- More rows would be added here -->
+                    </tbody>
+                </table>
+                <button class="btn btn-primary">Add New Number</button>
+
+                <h3 style="margin: 20px 0 10px;">Social Media</h3>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Platform</th>
+                        <th>URL</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><input type="text" class="form-control" value="Instagram"></td>
+                        <td><input type="text" class="form-control" value="#"></td>
+                        <td>
+                            <button class="btn btn-danger action-btn">Delete</button>
+                        </td>
+                    </tr>
+                    <!-- More rows would be added here -->
+                    </tbody>
+                </table>
+                <button class="btn btn-primary">Add New Platform</button>
+
+                <h3 style="margin: 20px 0 10px;">Email Addresses</h3>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><input type="email" class="form-control" value="contact@company.com"></td>
+                        <td>
+                            <button class="btn btn-danger action-btn">Delete</button>
+                        </td>
+                    </tr>
+                    <!-- More rows would be added here -->
+                    </tbody>
+                </table>
+                <button class="btn btn-primary">Add New Email</button>
+
+                <h3 style="margin: 20px 0 10px;">Location Maps</h3>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Location Name</th>
+                        <th>Image</th>
+                        <th>Map Embed Code</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><input type="text" class="form-control" value="Main Office Showroom"></td>
+                        <td><input type="file" class="form-control"></td>
+                        <td><textarea class="form-control"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3771.7558374704827!2d72.83921431537658!3d19.13364698706047!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3be7b7dd0ea5e5f7%3A0x6b4e5a35bd76c684!2sAndheri%20East%2C%20Mumbai%2C%20Maharashtra%20400059!5e0!3m2!1sen!2sin!4v1718902383610!5m2!1sen!2sin" width="100%" height="300" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe></textarea></td>
+                        <td>
+                            <button class="btn btn-danger action-btn">Delete</button>
+                        </td>
+                    </tr>
+                    <!-- More rows would be added here -->
+                    </tbody>
+                </table>
+                <button class="btn btn-primary">Add New Location</button>
+            </div>
+
+            <!-- FAQ Tab -->
+            <div id="contact-faq-tab" style="display: none;">
+                <div class="form-group">
+                    <label>Section Title</label>
+                    <input type="text" class="form-control" value="FAQ">
+                </div>
+
+                <h3 style="margin: 20px 0 10px;">FAQ Items</h3>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Question</th>
+                        <th>Answer</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><input type="text" class="form-control" value="How long does delivery usually take?"></td>
+                        <td><textarea class="form-control">Delivery typically takes 3-5 business days depending on your location.</textarea></td>
+                        <td>
+                            <button class="btn btn-danger action-btn">Delete</button>
+                        </td>
+                    </tr>
+                    <!-- More rows would be added here -->
+                    </tbody>
+                </table>
+                <button class="btn btn-primary">Add New FAQ</button>
+            </div>
+        </div>
+
+        <!-- Solutions Pages Section -->
+        <div id="solutions-section" class="content-section" style="display: none;">
+            <h2 class="section-title">Solutions Pages</h2>
+
+            <div class="form-group">
+                <label>Select Solution Page to Edit</label>
+                <select class="form-control" onchange="loadSolutionPage(this.value)">
+                    <option value="">-- Select a Page --</option>
+                    <option value="basement">Basement Waterproofing</option>
+                    <option value="bathroom">Bathroom Solutions</option>
+                    <option value="roof">Roof Waterproofing</option>
+                    <!-- More options would be added here -->
+                </select>
+            </div>
+
+            <div id="solution-page-editor" style="display: none;">
+                <div class="form-group">
+                    <label>Page Title</label>
+                    <input type="text" class="form-control" id="solution-title">
+                </div>
+
+                <div class="form-group">
+                    <label>Banner Image</label>
+                    <input type="file" class="form-control">
+                </div>
+
+                <h3 style="margin: 20px 0 10px;">Products Section</h3>
+                <div class="form-group">
+                    <label>Section Title</label>
+                    <input type="text" class="form-control" value="Our Products">
+                </div>
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Product Name</th>
+                        <th>Image</th>
+                        <th>PDF File</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><input type="text" class="form-control" value="Industrial Solution X-2000"></td>
+                        <td><input type="file" class="form-control"></td>
+                        <td><input type="file" class="form-control" accept=".pdf"></td>
+                        <td>
+                            <button class="btn btn-danger action-btn">Delete</button>
+                        </td>
+                    </tr>
+                    <!-- More rows would be added here -->
+                    </tbody>
+                </table>
+                <button class="btn btn-primary">Add New Product</button>
+
+                <h3 style="margin: 20px 0 10px;">Why Choose Section</h3>
+                <div class="form-group">
+                    <label>Section Title</label>
+                    <input type="text" class="form-control" value="Why Our Products Stand Out">
+                </div>
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Benefit Title</th>
+                        <th>Benefit Description</th>
+                        <th>Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td><input type="text" class="form-control" value="Premium Quality Materials"></td>
+                        <td><textarea class="form-control">Engineered for durability and long-lasting performance with industry-leading materials that withstand demanding conditions.</textarea></td>
+                        <td>
+                            <button class="btn btn-danger action-btn">Delete</button>
+                        </td>
+                    </tr>
+                    <!-- More rows would be added here -->
+                    </tbody>
+                </table>
+                <button class="btn btn-primary">Add New Benefit</button>
+
+                <h3 style="margin: 20px 0 10px;">Calculator Section</h3>
+                <div class="form-group">
+                    <label>Section Title</label>
+                    <input type="text" class="form-control" value="Project Calculator">
+                </div>
+
+                <div class="form-group">
+                    <label>Calculator Disclaimer</label>
+                    <textarea class="form-control">Note: This estimate is for planning purposes only. Final pricing may vary based on project specifications and market conditions.</textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Media Library Section -->
+        <div id="media-section" class="content-section" style="display: none;">
+            <h2 class="section-title">Media Library</h2>
+
+            <div class="form-group">
+                <label>Upload New Files</label>
+                <input type="file" class="form-control" multiple>
+            </div>
+
+            <div style="margin-top: 20px; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px;">
+                <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    <img src="https://via.placeholder.com/150" style="width: 100%; height: auto; margin-bottom: 10px;">
+                    <p style="font-size: 12px; margin-bottom: 5px;">homnam1.mp4</p>
+                    <p style="font-size: 12px; color: #666;">Video - 2.4MB</p>
+                    <button class="btn btn-danger" style="width: 100%; margin-top: 10px; padding: 5px; font-size: 12px;">Delete</button>
+                </div>
+                <!-- More media items would be added here -->
+            </div>
+        </div>
+
+        <!-- Settings Section -->
+        <div id="settings-section" class="content-section" style="display: none;">
+            <h2 class="section-title">Website Settings</h2>
+
+            <div class="form-group">
+                <label>Website Title</label>
+                <input type="text" class="form-control" value="Homna Construction">
+            </div>
+
+            <div class="form-group">
+                <label>Favicon</label>
+                <input type="file" class="form-control" accept="image/x-icon,.ico">
+            </div>
+
+            <div class="form-group">
+                <label>Logo</label>
+                <input type="file" class="form-control" accept="image/*">
+            </div>
+
+            <div class="form-group">
+                <label>Default Meta Description</label>
+                <textarea class="form-control">Homna Construction provides premium waterproofing and construction solutions for residential and commercial properties.</textarea>
+            </div>
+
+            <h3 style="margin: 20px 0 10px;">Social Media</h3>
+            <div class="form-group">
+                <label>Facebook URL</label>
+                <input type="text" class="form-control" placeholder="https://facebook.com/yourpage">
+            </div>
+
+            <div class="form-group">
+                <label>Instagram URL</label>
+                <input type="text" class="form-control" placeholder="https://instagram.com/yourpage">
+            </div>
+
+            <div class="form-group">
+                <label>LinkedIn URL</label>
+                <input type="text" class="form-control" placeholder="https://linkedin.com/company/yourcompany">
+            </div>
+
+            <h3 style="margin: 20px 0 10px;">Admin Settings</h3>
+            <div class="form-group">
+                <label>Admin Email</label>
+                <input type="email" class="form-control" value="admin@example.com">
+            </div>
+
+            <div class="form-group">
+                <label>Change Password</label>
+                <input type="password" class="form-control" placeholder="New Password">
+            </div>
+
+            <button class="btn btn-primary">Save Settings</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Show/hide sections
+    function showSection(sectionId) {
+        // Hide all sections
+        document.querySelectorAll('.content-section').forEach(section => {
+            section.style.display = 'none';
+        });
+
+        // Show selected section
+        document.getElementById(sectionId + '-section').style.display = 'block';
+
+        // Update active nav item
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        event.currentTarget.classList.add('active');
+
+        // Update page title
+        const pageTitle = event.currentTarget.querySelector('span').textContent;
+        document.querySelector('.page-title').textContent = pageTitle;
+    }
+
+    // Home page tabs
+    function showHomeTab(tabId) {
+        // Hide all tabs
+        document.querySelectorAll('#home-section > div[id$="-tab"]').forEach(tab => {
+            tab.style.display = 'none';
+        });
+
+        // Show selected tab
+        document.getElementById('home-' + tabId + '-tab').style.display = 'block';
+
+        // Update active tab
+        document.querySelectorAll('#home-section .tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        event.currentTarget.classList.add('active');
+    }
+
+    // About page tabs
+    function showAboutTab(tabId) {
+        // Hide all tabs
+        document.querySelectorAll('#about-section > div[id$="-tab"]').forEach(tab => {
+            tab.style.display = 'none';
+        });
+
+        // Show selected tab
+        document.getElementById('about-' + tabId + '-tab').style.display = 'block';
+
+        // Update active tab
+        document.querySelectorAll('#about-section .tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        event.currentTarget.classList.add('active');
+    }
+
+    // Contact page tabs
+    function showContactTab(tabId) {
+        // Hide all tabs
+        document.querySelectorAll('#contact-section > div[id$="-tab"]').forEach(tab => {
+            tab.style.display = 'none';
+        });
+
+        // Show selected tab
+        document.getElementById('contact-' + tabId + '-tab').style.display = 'block';
+
+        // Update active tab
+        document.querySelectorAll('#contact-section .tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        event.currentTarget.classList.add('active');
+    }
+
+    // Load solution page
+    function loadSolutionPage(pageId) {
+        const editor = document.getElementById('solution-page-editor');
+        if (pageId) {
+            editor.style.display = 'block';
+            // Here you would load the actual content for the selected page
+            document.getElementById('solution-title').value = document.querySelector('select option:checked').text;
+        } else {
+            editor.style.display = 'none';
+        }
+    }
+</script>
+</body>
+</html>
